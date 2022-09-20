@@ -16,6 +16,7 @@ import org.apache.flink.api.java.tuple.Tuple;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
+import org.apache.flink.types.Row;
 import org.apache.flink.util.Collector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +26,7 @@ import org.slf4j.LoggerFactory;
  * An event with a non-ascending counter will be logged and dropped.
  */
 public class AscendingCounterProcessFunction
-        extends KeyedProcessFunction<Tuple, Tuple3<String, ComparableRow, Long>, Tuple3<String, ComparableRow, Long>> {
+        extends KeyedProcessFunction<Tuple, Tuple3<String, Row, Long>, Tuple3<String, Row, Long>> {
     final private static Logger log = LoggerFactory.getLogger(AscendingCounterProcessFunction.class);
 
     private ValueState<Long> maxCounterState;
@@ -36,7 +37,7 @@ public class AscendingCounterProcessFunction
     }
 
     @Override
-    public void processElement(Tuple3<String, ComparableRow, Long> value, Context ctx, Collector<Tuple3<String, ComparableRow, Long>> out) throws Exception {
+    public void processElement(Tuple3<String, Row, Long> value, Context ctx, Collector<Tuple3<String, Row, Long>> out) throws Exception {
         final long counter = value.f2;
         final Long maxCounter = maxCounterState.value();
         log.debug("processElement: key={}, counter={}, maxCounter={}", ctx.getCurrentKey(), counter, maxCounter);

@@ -13,6 +13,7 @@ package io.pravega.flinktools.util;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.types.Row;
 import org.apache.flink.util.Collector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +23,7 @@ import org.slf4j.LoggerFactory;
  * Input is a GenericRecord.
  * Output is the tuple (GenericRecord input, ComparableRow key, Long counter).
  */
-public class ExtractKeyAndCounterFromGenericRecord implements FlatMapFunction<GenericRecord, Tuple3<GenericRecord, ComparableRow, Long>> {
+public class ExtractKeyAndCounterFromGenericRecord implements FlatMapFunction<GenericRecord, Tuple3<GenericRecord, Row, Long>> {
     final private static Logger log = LoggerFactory.getLogger(ExtractKeyAndCounterFromGenericRecord.class);
 
     final String[] keyFieldNames;
@@ -36,9 +37,9 @@ public class ExtractKeyAndCounterFromGenericRecord implements FlatMapFunction<Ge
     }
 
     @Override
-    public void flatMap(GenericRecord value, Collector<Tuple3<GenericRecord, ComparableRow, Long>> out) throws Exception {
+    public void flatMap(GenericRecord value, Collector<Tuple3<GenericRecord, Row, Long>> out) throws Exception {
         try {
-            final ComparableRow row = new ComparableRow(keyFieldNames.length);
+            final Row row = new Row(keyFieldNames.length);
             for (int i = 0; i < keyFieldNames.length; i++) {
                 final Object key = value.get(keyFieldNames[i]);
                 if (key == null) {

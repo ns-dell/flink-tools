@@ -15,6 +15,7 @@ import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
+import org.apache.flink.types.Row;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +68,7 @@ public class Filters {
     public static DataStream<String> ascendingCounterFilter(DataStream<String> lines, String[] keyFieldNames, String counterFieldName) {
         log.info("Filtering events using key {} and ascending counter [{}]", keyFieldNames, counterFieldName);
         final ObjectMapper objectMapper = new ObjectMapper();
-        final DataStream<Tuple3<String,ComparableRow,Long>> withDups = lines
+        final DataStream<Tuple3<String, Row,Long>> withDups = lines
                 .flatMap(new ExtractKeyAndCounterFromJson(keyFieldNames, counterFieldName, objectMapper, true))
                 .uid("ExtractKeyAndCounterFromJson")
                 .name("ExtractKeyAndCounterFromJson");

@@ -14,6 +14,7 @@ import org.apache.avro.generic.GenericRecord;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.types.Row;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +48,7 @@ public class GenericRecordFilters {
      */
     public static DataStream<GenericRecord> ascendingCounterFilter(DataStream<GenericRecord> lines, String[] keyFieldNames, String counterFieldName) {
         log.info("Filtering events using key {} and ascending counter [{}]", keyFieldNames, counterFieldName);
-        final DataStream<Tuple3<GenericRecord,ComparableRow,Long>> withDups = lines
+        final DataStream<Tuple3<GenericRecord,Row,Long>> withDups = lines
                 .flatMap(new ExtractKeyAndCounterFromGenericRecord(keyFieldNames, counterFieldName, true))
                 .uid("ExtractKeyAndCounterFromGenericRecord")
                 .name("ExtractKeyAndCounterFromGenericRecord");

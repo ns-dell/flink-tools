@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.types.Row;
 import org.apache.flink.util.Collector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * Input is a String.
  * Output is the tuple (String input, ComparableRow key, Long counter).
  */
-public class ExtractKeyAndCounterFromJson implements FlatMapFunction<String, Tuple3<String, ComparableRow, Long>> {
+public class ExtractKeyAndCounterFromJson implements FlatMapFunction<String, Tuple3<String, Row, Long>> {
     final private static Logger log = LoggerFactory.getLogger(ExtractKeyAndCounterFromJson.class);
 
     final String[] keyFieldNames;
@@ -40,10 +41,10 @@ public class ExtractKeyAndCounterFromJson implements FlatMapFunction<String, Tup
     }
 
     @Override
-    public void flatMap(String value, Collector<Tuple3<String, ComparableRow, Long>> out) throws Exception {
+    public void flatMap(String value, Collector<Tuple3<String, Row, Long>> out) throws Exception {
         try {
             final JsonNode node = objectMapper.readTree(value);
-            final ComparableRow row = new ComparableRow(keyFieldNames.length);
+            final Row row = new Row(keyFieldNames.length);
             for (int i = 0; i < keyFieldNames.length; i++) {
                 final JsonNode key = node.get(keyFieldNames[i]);
                 if (key == null) {
